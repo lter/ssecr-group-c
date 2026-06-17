@@ -71,11 +71,7 @@ cpue <- read_csv(file = file.path("data",
 sl <- read_csv(file = file.path("data",
                                   "marg_si_ind.csv"))
 
-#cpue2 <- read_csv(file = file.path("data",
-#                                  "pop.csv"))
 
-sl2 <- read_csv(file = file.path("data",
-                              "ind.csv"))
 
 #remove prefixes from site names to be able to merge
 
@@ -98,14 +94,6 @@ div<-merge(sitedata,div,by="si")
 div<-subset(div,si!="MCR_Backreef"& si!="MCR_FringingReef" &si!="MCR_Forereef")
 
 sl<-left_join(sl,sitedata,by="si")
-
-#try without morea since its lat is so different
-sl<-subset(sl,si!="MCR_Backreef"& si!="MCR_FringingReef" &si!="MCR_Forereef")
-
-sl2<-left_join(sl2,sitedata,by="si")
-
-#try without morea since its lat is so different
-sl2<-subset(sl2,si!="MCR_Backreef"& si!="MCR_FringingReef" &si!="MCR_Forereef")
 
 
 #Checking for Overall Differences Between Marine and Freshwater
@@ -134,9 +122,6 @@ inddatado<-subset(sl,.variable=="beta_DO_si")
 popdatatemp<-subset(cpue,.variable=="beta_temp_si")
 popdatado<-subset(cpue,.variable=="beta_DO_si")
 
-inddatatemp2<-subset(sl2,.variable=="beta_temp")
-inddatado2<-subset(sl2,.variable=="beta_DO")
-
 #popdatatemp2<-subset(cpue2,.variable=="beta_temp")
 #popdatado2<-subset(cpue2,.variable=="beta_DO")
 
@@ -163,7 +148,7 @@ str(inddatatemp)
 ##Temperature Correlations
 #brms correlation following this set up https://solomonkurz.netlify.app/blog/2019-02-16-bayesian-correlations-let-s-talk-options/
 #first standardize data
-inddatatemp2<-inddatatemp2 %>% 
+inddatatemp2<-inddatatemp %>% 
   mutate(median_s = (median - mean(median)) / sd(median),
          Species_s = (Unique_Species - mean(Unique_Species)) / sd(Unique_Species),
          Years_Fish_Data_s = (Years_Fish_Data - mean(Years_Fish_Data)) / sd(Years_Fish_Data),
@@ -172,6 +157,7 @@ inddatatemp2<-inddatatemp2 %>%
          mean_temp_s=(mean_temp - mean(mean_temp)) / sd(mean_temp),
          mean_DO_s=(mean_DO - mean(mean_DO)) / sd(mean_DO))
 
+#Richness appears to be driven by two heartland sites, so what does it look like without them?
 tempcor1<-brm(data = inddatatemp2, 
              family = gaussian,
              median_s~1+Species_s,
@@ -181,6 +167,15 @@ p_direction(tempcor1)
 #should be same correlation as pearson
 cor.test(inddatatemp$median,inddatatemp$Unique_Species,method="pearson")
 print(tempcor1)
+#Richness appears to be driven by two heartland sites, so what does it look like without them?
+inddatatemp2a<-subset(inddatatemp2,si!="NPS_HTLN_BUFF"&si!="NPS_HTLN_OZAR")
+tempcor1a<-brm(data = inddatatemp2a, 
+              family = gaussian,
+              median_s~1+Species_s,
+              chains = 4, cores = 4, 
+              seed = 1)
+p_direction(tempcor1a)
+print(tempcor1a)
 
 tempcor2<-update(tempcor1,formula=median_s~1+Years_Fish_Data_s,newdata=inddatatemp2,seed=1)
 print(tempcor2)
@@ -880,9 +875,7 @@ print(docorg)
 
 ###Make Graphs---------------------
 sl3<-subset(sl,.variable!="beta_0sp")
-#sl2<-subset(sl2,Habitat_Broad!="Estuary")
 #scatterplot function
-
 scatter_funsl = function(x, y) {
   ggplot(sl3, aes(x = .data[[x]], y = .data[[y]])) +
     geom_point() +
