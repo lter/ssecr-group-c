@@ -168,6 +168,13 @@ NEON_data <- harmonized %>%
 
 length(unique(NEON_data$MIDSITE)) #18 unique midsites
 
+#how many rows of data PER SITE ARE THERE? DATA ROW CHECK -----
+
+NEON_data %>% 
+  group_by(MIDSITE) %>% 
+  count()
+
+
 setdiff(NEON_data$SCI_NAME,
         taxon$scientificName) #all scientific names match
 
@@ -439,6 +446,14 @@ NEON_harmonized <- NEON_data
 NEON_harmonized <- NEON_harmonized %>% 
   mutate(SCI_NAME = str_to_sentence(SCI_NAME))
 
+
+#now perform the same data check to get the row counts AFTER ALL THE EXCLUSIONS ---- 
+
+#how many rows of data PER SITE ARE THERE? DATA ROW CHECK -----
+
+NEON_harmonized %>% 
+  group_by(MIDSITE) %>% 
+  count()
 #save as Rds to use in model scripts and PDF viz and also as a .csv for Jeremy potentially
 
 saveRDS(NEON_harmonized,
@@ -493,6 +508,13 @@ LTER_data <- harmonized %>%
 
 unique(LTER_data$SITE)
 length(unique(LTER_data$MIDSITE))
+
+#how many rows of data PER SITE ARE THERE? DATA ROW CHECK -----
+
+LTER_data %>% 
+  group_by(SITE) %>% 
+  count() %>% 
+  print(n = 23)
 
 #may have to do this site by site (got this from MCR metadata)
 
@@ -933,8 +955,17 @@ LTER_data <- LTER_data %>%
 
 #FINAL LTER JOINT HARMONIZATION ----
 
+
+
+
 LTER_harmonized <- LTER_data
 
+#how many rows of data PER SITE ARE THERE? DATA ROW CHECK -----
+
+LTER_harmonized %>% 
+  group_by(SITE) %>% 
+  count() %>% 
+  print(n = 23)
 #save as Rds to use in model scripts and PDF viz and also as a .csv for Jeremy potentially
 
 saveRDS(LTER_harmonized,
@@ -987,6 +1018,13 @@ write.csv(LTER_harmonized_summary,
 
 NPS_data <- harmonized %>% 
   filter(grepl('NPS', SITE))
+
+#how many rows of data PER SITE ARE THERE? DATA ROW CHECK -----
+
+NPS_data %>% 
+  group_by(SITE) %>% 
+  count() %>% 
+  print(n = 23)
 
 #check it picked up only NPS sites and first check for obvious mismatches or typos
 
@@ -1152,6 +1190,11 @@ NPS_data %>%
 
 NPS_harmonized <- NPS_data
 
+NPS_harmonized %>% 
+  group_by(SITE) %>% 
+  count() %>% 
+  print(n = 23)
+
 #check all species latin name structures:
 
 NPS_harmonized <- NPS_harmonized %>% 
@@ -1209,6 +1252,10 @@ write.csv(NPS_harmonized_summary,
 UCD_data <- harmonized %>% 
   filter(grepl('UCD', SITE))
 
+UCD_data %>% 
+  group_by(SITE) %>% 
+  count() %>% 
+  print(n = 23)
 #check it picked up only UCD sites and first check for obvious mismatches or typos
 
 length(unique(UCD_data$MIDSITE)) #now 4 midsites
@@ -1455,6 +1502,11 @@ UCD_data %>%
 
 UCD_harmonized <- UCD_data
 
+UCD_harmonized %>% 
+  group_by(SITE) %>% 
+  count() %>% 
+  print(n = 23)
+
 #check all species latin name structures:
 
 UCD_harmonized <- UCD_harmonized %>% 
@@ -1511,6 +1563,11 @@ write.csv(UCD_harmonized_summary,
 
 USGS_data <- harmonized %>% 
   filter(grepl('USGS', SITE))
+
+USGS_data%>% 
+  group_by(SITE) %>% 
+  count() %>% 
+  print(n = 23)
 
 #check it picked up only NPS sites and first check for obvious mismatches or typos
 
@@ -1593,6 +1650,11 @@ USGS_env_table <- USGS_do_years_table %>%
 
 USGS_harmonized <- USGS_data
 
+USGS_harmonized %>% 
+  group_by(SITE) %>% 
+  count() %>% 
+  print(n = 23)
+
 #species list ranked by commonality (how many sites are they at)
 
 USGS_species_list <- USGS_harmonized %>% 
@@ -1633,6 +1695,11 @@ unique(harmonized$SITE)
 
 IEP_data <- harmonized %>% 
   filter(grepl('IEP', SITE))
+
+IEP_data %>% 
+  group_by(MIDSITE) %>% 
+  count() %>% 
+  print(n = 23)
 
 #check it picked up only NPS sites and first check for obvious mismatches or typos
 
@@ -1733,6 +1800,10 @@ IEP_env_table <- IEP_do_years_table %>%
 
 IEP_harmonized <- IEP_data
 
+IEP_harmonized %>% 
+  group_by(MIDSITE) %>% 
+  count() %>% 
+  print(n = 23)
 #species list ranked by commonality (how many sites are they at)
 
 IEP_species_list <- IEP_harmonized %>% 
